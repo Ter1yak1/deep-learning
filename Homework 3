@@ -1,0 +1,356 @@
+import math
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+from tensorflow import keras
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import LSTM
+from keras.layers import Dropout
+from keras.layers import *
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import train_test_split
+from keras.callbacks import EarlyStopping
+from google.colab import drive
+from datetime import datetime
+
+df=pd.read_csv("/content/drive/MyDrive/TSLA.csv")
+
+training_set = df.iloc[:800, 1:2].values
+test_set = df.iloc[800:, 1:2].values
+
+"""## 4 hidden layers with dropout rate 0.2 and lag of 1"""
+
+sc = MinMaxScaler(feature_range = (0, 1))
+training_set_scaled = sc.fit_transform(training_set)
+X_train = []
+y_train = []
+for i in range(60, 800):
+    X_train.append(training_set_scaled[i-60:i, 0])
+    y_train.append(training_set_scaled[i, 0])
+X_train, y_train = np.array(X_train), np.array(y_train)
+X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+
+model = Sequential()
+model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50))
+model.add(Dropout(0.2))
+model.add(Dense(units = 1))
+
+model.compile(optimizer = 'adam', loss = 'mean_squared_error')
+
+model.fit(X_train, y_train, epochs = 100, batch_size = 32)
+
+dataset_train = df.iloc[:800, 1:2]
+dataset_test = df.iloc[800:, 1:2]
+dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
+inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
+inputs = inputs.reshape(-1,1)
+inputs = sc.transform(inputs)
+X_test = []
+for i in range(60, 519):
+    X_test.append(inputs[i-60:i, 0])
+X_test = np.array(X_test)
+X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+
+predicted_stock_price1 = model.predict(X_test)
+predicted_stock_price1 = sc.inverse_transform(predicted_stock_price1)
+
+plt.plot(df.loc[800:, 'Date'],dataset_test.values, color = 'red', label = 'Real TESLA Stock Price')
+plt.plot(df.loc[800:, 'Date'],predicted_stock_price1, color = 'blue', label = 'Predicted TESLA Stock Price')
+plt.xticks(np.arange(0,459,50))
+plt.title('TESLA Stock Price Prediction')
+plt.xlabel('Time')
+plt.ylabel('TESLA Stock Price')
+plt.legend()
+plt.show()
+
+"""## 4 hidden layers with dropout rate 0.2 and lag of 7"""
+
+sc = MinMaxScaler(feature_range = (0, 1))
+training_set_scaled = sc.fit_transform(training_set)
+X_train = []
+y_train = []
+for i in range(60, 800):
+    X_train.append(training_set_scaled[i-53:i, 0])
+    y_train.append(training_set_scaled[i, 0])
+X_train, y_train = np.array(X_train), np.array(y_train)
+X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+
+model = Sequential()
+model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50))
+model.add(Dropout(0.2))
+model.add(Dense(units = 1))
+
+model.compile(optimizer = 'adam', loss = 'mean_squared_error')
+
+model.fit(X_train, y_train, epochs = 100, batch_size = 32)
+
+dataset_train = df.iloc[:800, 1:2]
+dataset_test = df.iloc[800:, 1:2]
+dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
+inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
+inputs = inputs.reshape(-1,1)
+inputs = sc.transform(inputs)
+X_test = []
+for i in range(60, 519):
+    X_test.append(inputs[i-53:i, 0])
+X_test = np.array(X_test)
+X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+
+predicted_stock_price2 = model.predict(X_test)
+predicted_stock_price2 = sc.inverse_transform(predicted_stock_price2)
+
+plt.plot(df.loc[800:, 'Date'],dataset_test.values, color = 'red', label = 'Real TESLA Stock Price')
+plt.plot(df.loc[800:, 'Date'],predicted_stock_price2, color = 'blue', label = 'Predicted TESLA Stock Price')
+plt.xticks(np.arange(0,459,50))
+plt.title('TESLA Stock Price Prediction')
+plt.xlabel('Time')
+plt.ylabel('TESLA Stock Price')
+plt.legend()
+plt.show()
+
+"""## 4 hidden layers with dropout rate 0.2 and lag of 14"""
+
+sc = MinMaxScaler(feature_range = (0, 1))
+training_set_scaled = sc.fit_transform(training_set)
+X_train = []
+y_train = []
+for i in range(60, 800):
+    X_train.append(training_set_scaled[i-46:i, 0])
+    y_train.append(training_set_scaled[i, 0])
+X_train, y_train = np.array(X_train), np.array(y_train)
+X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+
+model = Sequential()
+model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50))
+model.add(Dropout(0.2))
+model.add(Dense(units = 1))
+
+model.compile(optimizer = 'adam', loss = 'mean_squared_error')
+
+model.fit(X_train, y_train, epochs = 100, batch_size = 32)
+
+dataset_train = df.iloc[:800, 1:2]
+dataset_test = df.iloc[800:, 1:2]
+dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
+inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
+inputs = inputs.reshape(-1,1)
+inputs = sc.transform(inputs)
+X_test = []
+for i in range(60, 519):
+    X_test.append(inputs[i-46:i, 0])
+X_test = np.array(X_test)
+X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+
+predicted_stock_price3 = model.predict(X_test)
+predicted_stock_price3 = sc.inverse_transform(predicted_stock_price3)
+
+plt.plot(df.loc[800:, 'Date'],dataset_test.values, color = 'red', label = 'Real TESLA Stock Price')
+plt.plot(df.loc[800:, 'Date'],predicted_stock_price3, color = 'blue', label = 'Predicted TESLA Stock Price')
+plt.xticks(np.arange(0,459,50))
+plt.title('TESLA Stock Price Prediction')
+plt.xlabel('Time')
+plt.ylabel('TESLA Stock Price')
+plt.legend()
+plt.show()
+
+"""## 6 hidden layers with dropout rate 0.2"""
+
+sc = MinMaxScaler(feature_range = (0, 1))
+training_set_scaled = sc.fit_transform(training_set)
+X_train = []
+y_train = []
+for i in range(60, 800):
+    X_train.append(training_set_scaled[i-60:i, 0])
+    y_train.append(training_set_scaled[i, 0])
+X_train, y_train = np.array(X_train), np.array(y_train)
+X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+
+model = Sequential()
+model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 50))
+model.add(Dropout(0.2))
+model.add(Dense(units = 1))
+
+model.compile(optimizer = 'adam', loss = 'mean_squared_error')
+
+model.fit(X_train, y_train, epochs = 100, batch_size = 32)
+
+dataset_train = df.iloc[:800, 1:2]
+dataset_test = df.iloc[800:, 1:2]
+dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
+inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
+inputs = inputs.reshape(-1,1)
+inputs = sc.transform(inputs)
+X_test = []
+for i in range(60, 519):
+    X_test.append(inputs[i-60:i, 0])
+X_test = np.array(X_test)
+X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+
+predicted_stock_price4 = model.predict(X_test)
+predicted_stock_price4 = sc.inverse_transform(predicted_stock_price4)
+
+plt.plot(df.loc[800:, 'Date'],dataset_test.values, color = 'red', label = 'Real TESLA Stock Price')
+plt.plot(df.loc[800:, 'Date'],predicted_stock_price4, color = 'blue', label = 'Predicted TESLA Stock Price')
+plt.xticks(np.arange(0,459,50))
+plt.title('TESLA Stock Price Prediction')
+plt.xlabel('Time')
+plt.ylabel('TESLA Stock Price')
+plt.legend()
+plt.show()
+
+"""## 4 hidden layers with dropout rate 0.5"""
+
+sc = MinMaxScaler(feature_range = (0, 1))
+training_set_scaled = sc.fit_transform(training_set)
+X_train = []
+y_train = []
+for i in range(60, 800):
+    X_train.append(training_set_scaled[i-60:i, 0])
+    y_train.append(training_set_scaled[i, 0])
+X_train, y_train = np.array(X_train), np.array(y_train)
+X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+
+model = Sequential()
+model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+model.add(Dropout(0.5))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.5))
+model.add(LSTM(units = 50, return_sequences = True))
+model.add(Dropout(0.5))
+model.add(LSTM(units = 50))
+model.add(Dropout(0.5))
+model.add(Dense(units = 1))
+
+model.compile(optimizer = 'adam', loss = 'mean_squared_error')
+
+model.fit(X_train, y_train, epochs = 100, batch_size = 32)
+
+dataset_train = df.iloc[:800, 1:2]
+dataset_test = df.iloc[800:, 1:2]
+dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
+inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
+inputs = inputs.reshape(-1,1)
+inputs = sc.transform(inputs)
+X_test = []
+for i in range(60, 519):
+    X_test.append(inputs[i-60:i, 0])
+X_test = np.array(X_test)
+X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+
+predicted_stock_price5 = model.predict(X_test)
+predicted_stock_price5 = sc.inverse_transform(predicted_stock_price5)
+
+plt.plot(df.loc[800:, 'Date'],dataset_test.values, color = 'red', label = 'Real TESLA Stock Price')
+plt.plot(df.loc[800:, 'Date'],predicted_stock_price5, color = 'blue', label = 'Predicted TESLA Stock Price')
+plt.xticks(np.arange(0,459,50))
+plt.title('TESLA Stock Price Prediction')
+plt.xlabel('Time')
+plt.ylabel('TESLA Stock Price')
+plt.legend()
+plt.show()
+
+"""## Comparison using 4 hidden layer and 6 hidden layer"""
+
+plt.plot(df.loc[800:, 'Date'],dataset_test.values, color = 'red', label = 'Real TESLA Stock Price')
+plt.plot(df.loc[800:, 'Date'],predicted_stock_price1, color = 'blue', label = 'Predicted TESLA Stock Price with 4 hidden layer')
+plt.plot(df.loc[800:, 'Date'],predicted_stock_price4, color = 'green', label = 'Predicted TESLA Stock Price with 6 hidden layer')
+plt.xticks(np.arange(0,459,50))
+plt.title('TESLA Stock Price Prediction')
+plt.xlabel('Time')
+plt.ylabel('TESLA Stock Price')
+plt.legend()
+plt.show()
+
+"""From the above plot we can find that the model with 4 hidden layers has a better prediction.
+
+## Comparison using dropout rate 0.2 and dropout rate 0.5
+"""
+
+plt.plot(df.loc[800:, 'Date'],dataset_test.values, color = 'red', label = 'Real TESLA Stock Price')
+plt.plot(df.loc[800:, 'Date'],predicted_stock_price1, color = 'blue', label = 'Predicted TESLA Stock Price with dropout rate 0.2')
+plt.plot(df.loc[800:, 'Date'],predicted_stock_price5, color = 'green', label = 'Predicted TESLA Stock Price with dropout rate 0.5')
+plt.xticks(np.arange(0,459,50))
+plt.title('TESLA Stock Price Prediction')
+plt.xlabel('Time')
+plt.ylabel('TESLA Stock Price')
+plt.legend()
+plt.show()
+
+"""From the above plot we can find that both models have similar predictions, but the model with dropout rate 0.2 is better.
+
+## Predict for future two weeks
+"""
+
+start_date = datetime(2020, 10, 1)
+end_date = datetime(2020, 10, 15)
+diff = (end_date - start_date).days
+dates = df['Date']
+last_date = '2020-10-1'
+timestamp_list = pd.date_range(last_date, periods = diff).tolist()
+datestring_list = [i.strftime("%Y-%m-%d") for i in timestamp_list] 
+datestring_list
+index = [2,3,9,10]
+to_del = object()
+for ind in index:
+    datestring_list[ind] = to_del
+for i in index:
+    datestring_list.remove(to_del)
+
+dataset_train = df.iloc[:800, 1:2]
+dataset_test = df.iloc[800:, 1:2]
+dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
+inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
+inputs = inputs.reshape(-1,1)
+inputs = sc.transform(inputs)
+X_test = []
+for i in range(60, 519):
+    X_test.append(inputs[i-60:i, 0])
+
+del X_test[0:449]
+X_test = np.array(X_test)
+X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+
+predicted_stock_price = model.predict(X_test)
+predicted_stock_price = sc.inverse_transform(predicted_stock_price)
+
+plt.plot(datestring_list,predicted_stock_price, color = 'red', label = 'Predicted TESLA Stock Price')
+plt.xticks(np.arange(0,10))
+plt.title('TESLA Stock Price Prediction')
+plt.xlabel('Time')
+plt.ylabel('TESLA Stock Price')
+figure=plt.gcf()
+figure.set_size_inches(16,12)
+plt.xticks(rotation=30)
+plt.legend()
+plt.show()
