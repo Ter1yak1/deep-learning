@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[ ]:
+
+
+from pymagnitude import *
+import matplotlib.pyplot as plt
+from pandas.core.frame import DataFrame
+file_path = "GoogleNews-vectors-negative300.magnitude"
+vectors = Magnitude(file_path)
+
+
+# ## Question 1
+
+# In[ ]:
+
+
+vectors.dim   # Check the dimensionality
+
+
+# The dimensionality of these word embeddings is 300.
+
+# ## Question 2
+
+# In[ ]:
+
+
+vectors.most_similar("picnic", topn = 5)   #Check the similar words to picnic
+
+
+# In[ ]:
+
+
+data1 = DataFrame(vectors.most_similar("picnic", topn = 5))
+plt.figure(figsize=(13,8))
+plt.bar(data1[0],data1[1])
+
+
+# The top-5 most similar words to 'picnic' is 'picnics', 'picnic_lunch', 'Picnic', 'potluck_picnic', 'picnic_supper'.
+
+# ## Question 3
+
+# In[ ]:
+
+
+vectors.doesnt_match(['tissue', 'papyrus', 'manila', 'newsprint', 'parchment', 'gazette']) # Query for which key doesn't match a list of keys
+
+
+# According to the word embeddings, 'tissue' is not like the others.
+
+# ## Question 4
+
+# In[ ]:
+
+
+vectors.most_similar(positive = ["leg","throw"], negative = ["jump"]) #solve analogies
+
+
+# In[ ]:
+
+
+data2 = DataFrame(vectors.most_similar(positive = ["leg","throw"], negative = ["jump"]))
+plt.figure(figsize=(20,8))
+plt.bar(data2[0],data2[1])
+
+
+# Therefore, $X$ should be $'forearm'$.
